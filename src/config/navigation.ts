@@ -13,11 +13,12 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
+import type { ElementType } from "react";
 
 export type NavigationItem = {
   title: string;
   href: string;
-  icon: React.ElementType;
+  icon: ElementType;
   group: "general" | "crm" | "operaciones" | "interno";
 };
 
