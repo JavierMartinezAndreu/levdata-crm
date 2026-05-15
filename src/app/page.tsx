@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, BarChart3, Code2, DatabaseZap } from "lucide-react";
 
+import { BrandLogo } from "@/components/common/brand-logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -15,11 +16,12 @@ export default function HomePage() {
               CRM interno en fase mock
             </div>
 
-            <div className="mb-6 flex items-center gap-3">
-              <span className="text-4xl font-extrabold text-[#00ABBD]">&gt;_</span>
-              <span className="text-4xl font-extrabold tracking-tight text-[#071B3A]">
-                Lev<span className="levdata-text-gradient">Data</span>
-              </span>
+            <div className="mb-6">
+              <BrandLogo
+                variant="horizontal"
+                priority
+                className="h-14 w-[230px] sm:h-16 sm:w-[270px]"
+              />
             </div>
 
             <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-[#071B3A] sm:text-5xl lg:text-6xl">
@@ -66,7 +68,7 @@ export default function HomePage() {
                       <p className="text-sm text-white/60">Estado de LevData</p>
                       <p className="mt-2 text-3xl font-bold">Control total</p>
                     </div>
-                    <span className="text-3xl font-black text-[#00ABBD]">&gt;_</span>
+                    <BrandLogo variant="symbol" className="size-12" />
                   </div>
 
                   <div className="mt-8 grid grid-cols-2 gap-3">

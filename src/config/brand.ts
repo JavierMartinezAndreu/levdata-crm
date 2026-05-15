@@ -2,6 +2,11 @@ export const brand = {
   name: "LevData",
   slogan: "Datos, automatización y decisión para empresas.",
 
+  logo: {
+    horizontal: "/brand/levdata-logo-horizontal-gradient.svg",
+    symbol: "/brand/levdata-symbol-gradient.svg",
+  },
+
   colors: {
     aqua: "#00ABBD",
     skyBlue: "#0099DD",
