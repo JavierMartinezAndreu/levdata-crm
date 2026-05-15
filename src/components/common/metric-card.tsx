@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 
@@ -8,7 +9,7 @@ type MetricTone = "primary" | "info" | "warning" | "success" | "danger" | "dark"
 
 type MetricCardProps = {
   title: string;
-  value: string;
+  value: ReactNode;
   description?: string;
   icon: LucideIcon;
   variation?: string;
@@ -113,9 +114,9 @@ export function MetricCard({
 
         <p className="text-sm font-medium text-slate-500">{title}</p>
 
-        <p className="mt-2 text-3xl font-extrabold tracking-tight text-[#071B3A]">
+        <div className="mt-2 text-3xl font-extrabold tracking-tight text-[#071B3A]">
           {value}
-        </p>
+        </div>
 
         {description ? (
           <p className="mt-2 text-sm leading-6 text-slate-500">

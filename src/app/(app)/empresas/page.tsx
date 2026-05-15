@@ -1,15 +1,6 @@
-import { Building2 } from "lucide-react";
-
-import { ModulePlaceholder } from "@/components/common/module-placeholder";
+import { CompaniesClientPage } from "@/features/companies/components/companies-client-page";
+import { mockCompanies } from "@/features/companies/data/mock-companies";
 
 export default function CompaniesPage() {
-  return (
-    <ModulePlaceholder
-      eyebrow="CRM"
-      title="Empresas"
-      description="Gestiona clientes, prospectos y partners de LevData."
-      icon={Building2}
-      nextStep="Construiremos buscador, filtros por estado, sector, responsable y potencial, cards resumen y listado responsive."
-    />
-  );
+  return <CompaniesClientPage companies={mockCompanies} />;
 }
