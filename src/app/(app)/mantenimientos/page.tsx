@@ -1,15 +1,14 @@
-import { Wrench } from "lucide-react";
-
-import { ModulePlaceholder } from "@/components/common/module-placeholder";
+import { MaintenanceClientPage } from "@/features/maintenance/components/maintenance-client-page";
+import {
+  mockMaintenanceContracts,
+  mockMaintenanceDues,
+} from "@/features/maintenance/data/mock-maintenance";
 
 export default function MaintenancePage() {
   return (
-    <ModulePlaceholder
-      eyebrow="Recurrentes"
-      title="Mantenimientos"
-      description="Gestiona contratos recurrentes, vencimientos, deuda y MRR."
-      icon={Wrench}
-      nextStep="Añadiremos vencimientos próximos, mantenimientos activos, deuda acumulada, cobro parcial y estados visuales."
+    <MaintenanceClientPage
+      contracts={mockMaintenanceContracts}
+      dues={mockMaintenanceDues}
     />
   );
 }
