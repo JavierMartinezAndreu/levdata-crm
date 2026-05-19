@@ -1,15 +1,5 @@
-import { Settings } from "lucide-react";
-
-import { ModulePlaceholder } from "@/components/common/module-placeholder";
+import { SettingsClientPage } from "@/features/settings/components/settings-client-page";
 
 export default function SettingsPage() {
-  return (
-    <ModulePlaceholder
-      eyebrow="Sistema"
-      title="Configuración"
-      description="Preferencias internas del CRM, datos de empresa y ajustes visuales mock."
-      icon={Settings}
-      nextStep="Añadiremos perfil de LevData, preferencias visuales, roles mock y configuración preparada para Supabase."
-    />
-  );
+  return <SettingsClientPage />;
 }
