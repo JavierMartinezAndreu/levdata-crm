@@ -1,15 +1,16 @@
-import { Landmark } from "lucide-react";
-
-import { ModulePlaceholder } from "@/components/common/module-placeholder";
+import { FinanceClientPage } from "@/features/finance/components/finance-client-page";
+import {
+  mockExpenses,
+  mockPayments,
+  mockPayouts,
+} from "@/features/finance/data/mock-finance";
 
 export default function FinancePage() {
   return (
-    <ModulePlaceholder
-      eyebrow="Tesorería"
-      title="Caja LevData"
-      description="Control interno de ingresos, gastos, beneficio, deuda, MRR, ARR y repartos."
-      icon={Landmark}
-      nextStep="Construiremos gráficas de ingresos vs gastos, movimientos, deuda pendiente, mantenimientos y repartos a socios."
+    <FinanceClientPage
+      payments={mockPayments}
+      expenses={mockExpenses}
+      payouts={mockPayouts}
     />
   );
 }
