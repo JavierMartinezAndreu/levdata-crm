@@ -25,6 +25,12 @@ import {
   getTemperatureTone,
 } from "@/features/opportunities/utils";
 
+export function generateStaticParams() {
+  return mockOpportunities.map((opportunity) => ({
+    id: opportunity.id,
+  }));
+}
+
 type OpportunityDetailPageProps = {
   params: Promise<{
     id: string;

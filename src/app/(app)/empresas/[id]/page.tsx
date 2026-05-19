@@ -16,6 +16,12 @@ import {
   getCompanyStatusTone,
 } from "@/features/companies/utils";
 
+export function generateStaticParams() {
+  return mockCompanies.map((company) => ({
+    id: company.id,
+  }));
+}
+
 type CompanyDetailPageProps = {
   params: Promise<{
     id: string;

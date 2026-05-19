@@ -19,6 +19,12 @@ import {
   getProjectStatusTone,
 } from "@/features/projects/utils";
 
+export function generateStaticParams() {
+  return mockProjects.map((project) => ({
+    id: project.id,
+  }));
+}
+
 type ProjectDetailPageProps = {
   params: Promise<{
     id: string;

@@ -25,6 +25,12 @@ import {
   getDecisionRoleTone,
 } from "@/features/contacts/utils";
 
+export function generateStaticParams() {
+  return mockContacts.map((contact) => ({
+    id: contact.id,
+  }));
+}
+
 type ContactDetailPageProps = {
   params: Promise<{
     id: string;
