@@ -1,15 +1,6 @@
-import { ShieldCheck } from "lucide-react";
-
-import { ModulePlaceholder } from "@/components/common/module-placeholder";
+import { AuditClientPage } from "@/features/audit/components/audit-client-page";
+import { mockAuditLogs } from "@/features/audit/data/mock-audit";
 
 export default function AuditPage() {
-  return (
-    <ModulePlaceholder
-      eyebrow="Historial"
-      title="Auditoría"
-      description="Consulta cambios de estado, cobros, gastos, entregas y acciones internas."
-      icon={ShieldCheck}
-      nextStep="Crearemos timeline de auditoría con antes/después, usuario responsable, entidad afectada y fecha."
-    />
-  );
+  return <AuditClientPage logs={mockAuditLogs} />;
 }
