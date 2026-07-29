@@ -3,12 +3,15 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
   Building2,
+  Edit3,
   Loader2,
   Mail,
   Phone,
   Plus,
   RefreshCw,
   Search,
+  Trash2,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -21,6 +24,8 @@ import { Input } from "@/components/ui/input";
 import {
   createCompany,
   listCompanies,
+  softDeleteCompany,
+  updateCompany,
 } from "@/features/companies/data/companies-service";
 import type {
   CompanyDb,
@@ -55,8 +60,7 @@ const emptyCompanyForm: CompanyFormValues = {
   notes: "",
 };
 
-const statusOptions: { value: CompanyDbStatus | "all"; label: string }[] = [
-  { value: "all", label: "Todos los estados" },
+const companyStatusOptions: { value: CompanyDbStatus; label: string }[] = [
   { value: "prospecto", label: "Prospecto" },
   { value: "contactado", label: "Contactado" },
   { value: "oportunidad", label: "Oportunidad" },
@@ -65,23 +69,40 @@ const statusOptions: { value: CompanyDbStatus | "all"; label: string }[] = [
   { value: "descartado", label: "Descartado" },
 ];
 
-const potentialOptions: { value: CompanyDbPotential | "all"; label: string }[] = [
-  { value: "all", label: "Todos los potenciales" },
+const companyPotentialOptions: {
+  value: CompanyDbPotential;
+  label: string;
+}[] = [
   { value: "bajo", label: "Bajo" },
   { value: "medio", label: "Medio" },
   { value: "alto", label: "Alto" },
   { value: "estrategico", label: "Estratégico" },
 ];
 
+const statusFilterOptions: { value: CompanyDbStatus | "all"; label: string }[] =
+  [{ value: "all", label: "Todos los estados" }, ...companyStatusOptions];
+
+const potentialFilterOptions: {
+  value: CompanyDbPotential | "all";
+  label: string;
+}[] = [
+  { value: "all", label: "Todos los potenciales" },
+  ...companyPotentialOptions,
+];
+
 export function CompaniesRealtimePage() {
   const [companies, setCompanies] = useState<CompanyDb[]>([]);
   const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   const [formOpen, setFormOpen] = useState(false);
+  const [editingCompanyId, setEditingCompanyId] = useState<string | null>(null);
+  const [form, setForm] = useState<CompanyFormValues>(emptyCompanyForm);
+
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<CompanyDbStatus | "all">("all");
   const [potential, setPotential] = useState<CompanyDbPotential | "all">("all");
-  const [form, setForm] = useState<CompanyFormValues>(emptyCompanyForm);
 
   async function loadCompanies() {
     try {
@@ -115,6 +136,11 @@ export function CompaniesRealtimePage() {
     [companies, search, status, potential],
   );
 
+  const formTitle = editingCompanyId ? "Editar empresa" : "Nueva empresa";
+  const formDescription = editingCompanyId
+    ? "Actualiza los datos reales de la empresa en Supabase."
+    : "Crea una empresa real en Supabase. Después podremos asociarle contactos y oportunidades.";
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -123,25 +149,96 @@ export function CompaniesRealtimePage() {
       return;
     }
 
-    setCreating(true);
+    setSaving(true);
 
     try {
-      const createdCompany = await createCompany(form);
+      if (editingCompanyId) {
+        const updatedCompany = await updateCompany(editingCompanyId, form);
 
-      setCompanies((current) => [createdCompany, ...current]);
-      setForm(emptyCompanyForm);
-      setFormOpen(false);
+        setCompanies((current) =>
+          current.map((company) =>
+            company.id === updatedCompany.id ? updatedCompany : company,
+          ),
+        );
 
-      toast.success("Empresa creada correctamente.", {
-        description: createdCompany.commercial_name,
+        toast.success("Empresa actualizada correctamente.", {
+          description: updatedCompany.commercial_name,
+        });
+      } else {
+        const createdCompany = await createCompany(form);
+
+        setCompanies((current) => [createdCompany, ...current]);
+
+        toast.success("Empresa creada correctamente.", {
+          description: createdCompany.commercial_name,
+        });
+      }
+
+      closeForm();
+    } catch (error) {
+      toast.error(
+        editingCompanyId
+          ? "No se ha podido actualizar la empresa."
+          : "No se ha podido crear la empresa.",
+        {
+          description:
+            error instanceof Error ? error.message : "Error desconocido.",
+        },
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function openCreateForm() {
+    setEditingCompanyId(null);
+    setForm(emptyCompanyForm);
+    setFormOpen(true);
+  }
+
+  function openEditForm(company: CompanyDb) {
+    setEditingCompanyId(company.id);
+    setForm(mapCompanyToForm(company));
+    setFormOpen(true);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  function closeForm() {
+    setEditingCompanyId(null);
+    setForm(emptyCompanyForm);
+    setFormOpen(false);
+  }
+
+  async function handleDelete(company: CompanyDb) {
+    const confirmed = window.confirm(
+      `¿Seguro que quieres eliminar "${company.commercial_name}"? Se ocultará del CRM, pero quedará trazabilidad en auditoría.`,
+    );
+
+    if (!confirmed) return;
+
+    setDeletingId(company.id);
+
+    try {
+      await softDeleteCompany(company.id);
+
+      setCompanies((current) =>
+        current.filter((item) => item.id !== company.id),
+      );
+
+      toast.success("Empresa eliminada correctamente.", {
+        description: company.commercial_name,
       });
     } catch (error) {
-      toast.error("No se ha podido crear la empresa.", {
+      toast.error("No se ha podido eliminar la empresa.", {
         description:
           error instanceof Error ? error.message : "Error desconocido.",
       });
     } finally {
-      setCreating(false);
+      setDeletingId(null);
     }
   }
 
@@ -176,7 +273,7 @@ export function CompaniesRealtimePage() {
 
             <Button
               type="button"
-              onClick={() => setFormOpen((current) => !current)}
+              onClick={openCreateForm}
               className="rounded-2xl bg-[#00ABBD] text-white hover:bg-[#0099DD]"
             >
               <Plus className="mr-2 size-4" />
@@ -229,10 +326,7 @@ export function CompaniesRealtimePage() {
       </section>
 
       {formOpen ? (
-        <SectionCard
-          title="Nueva empresa"
-          description="Crea una empresa real en Supabase. Después podremos asociarle contactos y oportunidades."
-        >
+        <SectionCard title={formTitle} description={formDescription}>
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="grid gap-4 lg:grid-cols-3">
               <FormField
@@ -314,22 +408,14 @@ export function CompaniesRealtimePage() {
               <SelectField
                 label="Estado"
                 value={form.status}
-                options={statusOptions.filter(
-                  (option): option is { value: CompanyDbStatus; label: string } =>
-                    option.value !== "all",
-                )}
+                options={companyStatusOptions}
                 onChange={(value) => updateForm("status", value)}
               />
 
               <SelectField
                 label="Potencial"
                 value={form.potential}
-                options={potentialOptions.filter(
-                  (
-                    option,
-                  ): option is { value: CompanyDbPotential; label: string } =>
-                    option.value !== "all",
-                )}
+                options={companyPotentialOptions}
                 onChange={(value) => updateForm("potential", value)}
               />
             </div>
@@ -352,28 +438,32 @@ export function CompaniesRealtimePage() {
               <Button
                 type="button"
                 variant="outline"
-                disabled={creating}
-                onClick={() => {
-                  setForm(emptyCompanyForm);
-                  setFormOpen(false);
-                }}
+                disabled={saving}
+                onClick={closeForm}
                 className="rounded-2xl bg-white"
               >
+                <X className="mr-2 size-4" />
                 Cancelar
               </Button>
 
               <Button
                 type="submit"
-                disabled={creating}
+                disabled={saving}
                 className="rounded-2xl bg-[#00ABBD] text-white hover:bg-[#0099DD]"
               >
-                {creating ? (
+                {saving ? (
                   <Loader2 className="mr-2 size-4 animate-spin" />
+                ) : editingCompanyId ? (
+                  <Edit3 className="mr-2 size-4" />
                 ) : (
                   <Plus className="mr-2 size-4" />
                 )}
 
-                {creating ? "Guardando..." : "Guardar empresa"}
+                {saving
+                  ? "Guardando..."
+                  : editingCompanyId
+                    ? "Guardar cambios"
+                    : "Guardar empresa"}
               </Button>
             </div>
           </form>
@@ -402,7 +492,7 @@ export function CompaniesRealtimePage() {
             }
             className="h-12 rounded-2xl border border-[#A1C7E0]/60 bg-white px-4 text-sm font-semibold text-[#071B3A] outline-none focus:border-[#00ABBD] focus:ring-4 focus:ring-[#00ABBD]/10"
           >
-            {statusOptions.map((option) => (
+            {statusFilterOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -416,7 +506,7 @@ export function CompaniesRealtimePage() {
             }
             className="h-12 rounded-2xl border border-[#A1C7E0]/60 bg-white px-4 text-sm font-semibold text-[#071B3A] outline-none focus:border-[#00ABBD] focus:ring-4 focus:ring-[#00ABBD]/10"
           >
-            {potentialOptions.map((option) => (
+            {potentialFilterOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -450,7 +540,13 @@ export function CompaniesRealtimePage() {
         ) : (
           <div className="grid gap-3">
             {filteredCompanies.map((company) => (
-              <CompanyCard key={company.id} company={company} />
+              <CompanyCard
+                key={company.id}
+                company={company}
+                deleting={deletingId === company.id}
+                onEdit={() => openEditForm(company)}
+                onDelete={() => handleDelete(company)}
+              />
             ))}
           </div>
         )}
@@ -461,9 +557,17 @@ export function CompaniesRealtimePage() {
 
 type CompanyCardProps = {
   company: CompanyDb;
+  deleting: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
 };
 
-function CompanyCard({ company }: CompanyCardProps) {
+function CompanyCard({
+  company,
+  deleting,
+  onEdit,
+  onDelete,
+}: CompanyCardProps) {
   return (
     <article className="rounded-3xl border border-[#DCEAF1]/80 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
@@ -526,9 +630,38 @@ function CompanyCard({ company }: CompanyCardProps) {
           </div>
         </div>
 
-        <div className="grid min-w-52 grid-cols-2 gap-2 text-sm xl:text-right">
-          <SmallInfo label="Fuente" value={company.source || "Sin dato"} />
-          <SmallInfo label="Web" value={company.website || "Sin web"} />
+        <div className="flex min-w-60 flex-col gap-3">
+          <div className="grid grid-cols-2 gap-2 text-sm xl:text-right">
+            <SmallInfo label="Fuente" value={company.source || "Sin dato"} />
+            <SmallInfo label="Web" value={company.website || "Sin web"} />
+          </div>
+
+          <div className="flex gap-2 xl:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onEdit}
+              className="rounded-2xl bg-white"
+            >
+              <Edit3 className="mr-2 size-4" />
+              Editar
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onDelete}
+              disabled={deleting}
+              className="rounded-2xl border-red-100 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700"
+            >
+              {deleting ? (
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 size-4" />
+              )}
+              Eliminar
+            </Button>
+          </div>
         </div>
       </div>
     </article>
@@ -621,4 +754,24 @@ function SelectField<Value extends string>({
       </select>
     </div>
   );
+}
+
+function mapCompanyToForm(company: CompanyDb): CompanyFormValues {
+  return {
+    commercial_name: company.commercial_name,
+    legal_name: company.legal_name ?? "",
+    tax_id: company.tax_id ?? "",
+    email: company.email ?? "",
+    phone: company.phone ?? "",
+    website: company.website ?? "",
+    sector: company.sector ?? "",
+    source: company.source ?? "",
+    address: company.address ?? "",
+    city: company.city ?? "",
+    province: company.province ?? "",
+    postal_code: company.postal_code ?? "",
+    status: company.status,
+    potential: company.potential,
+    notes: company.notes ?? "",
+  };
 }
