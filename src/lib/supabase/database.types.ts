@@ -163,15 +163,159 @@ export type Database = {
         };
         Relationships: [];
       };
+
+      contacts: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          created_by: string | null;
+          first_name: string;
+          last_name: string | null;
+          email: string | null;
+          phone: string | null;
+          mobile: string | null;
+          job_title: string | null;
+          preferred_channel:
+            | "email"
+            | "telefono"
+            | "whatsapp"
+            | "reunion"
+            | "indiferente";
+          language: string;
+          contact_schedule: string | null;
+          consent_notes: string | null;
+          notes: string | null;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+          first_name: string;
+          last_name?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          mobile?: string | null;
+          job_title?: string | null;
+          preferred_channel?:
+            | "email"
+            | "telefono"
+            | "whatsapp"
+            | "reunion"
+            | "indiferente";
+          language?: string;
+          contact_schedule?: string | null;
+          consent_notes?: string | null;
+          notes?: string | null;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+          first_name?: string;
+          last_name?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          mobile?: string | null;
+          job_title?: string | null;
+          preferred_channel?:
+            | "email"
+            | "telefono"
+            | "whatsapp"
+            | "reunion"
+            | "indiferente";
+          language?: string;
+          contact_schedule?: string | null;
+          consent_notes?: string | null;
+          notes?: string | null;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
+
+      company_contacts: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          company_id: string;
+          contact_id: string;
+          role:
+            | "comercial"
+            | "tecnico"
+            | "administracion"
+            | "emergencias"
+            | "direccion"
+            | "general";
+          job_title: string | null;
+          is_primary: boolean;
+          notes: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          company_id: string;
+          contact_id: string;
+          role?:
+            | "comercial"
+            | "tecnico"
+            | "administracion"
+            | "emergencias"
+            | "direccion"
+            | "general";
+          job_title?: string | null;
+          is_primary?: boolean;
+          notes?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          company_id?: string;
+          contact_id?: string;
+          role?:
+            | "comercial"
+            | "tecnico"
+            | "administracion"
+            | "emergencias"
+            | "direccion"
+            | "general";
+          job_title?: string | null;
+          is_primary?: boolean;
+          notes?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
-    soft_delete_company: {
+      soft_delete_company: {
         Args: {
-        company_id: string;
+          company_id: string;
         };
         Returns: void;
-    };
+      };
+      soft_delete_contact: {
+        Args: {
+          contact_id: string;
+        };
+        Returns: void;
+      };
+      replace_contact_company_relation: {
+        Args: {
+          p_contact_id: string;
+          p_company_id: string | null;
+          p_role: string;
+          p_job_title: string;
+          p_is_primary: boolean;
+        };
+        Returns: void;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
