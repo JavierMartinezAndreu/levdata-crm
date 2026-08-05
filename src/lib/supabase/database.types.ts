@@ -291,6 +291,127 @@ export type Database = {
         };
         Relationships: [];
       };
+
+      opportunities: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          created_by: string | null;
+          assigned_to: string | null;
+          company_id: string;
+          contact_id: string | null;
+          title: string;
+          description: string | null;
+          status: "abierta" | "ganada" | "perdida" | "pospuesta" | "no_encaja";
+          stage:
+            | "detectada"
+            | "contactada"
+            | "reunion"
+            | "propuesta"
+            | "negociacion"
+            | "ganada"
+            | "perdida";
+          temperature: "fria" | "templada" | "caliente";
+          probability: number;
+          one_time_value: number;
+          expected_mrr: number;
+          estimated_cost: number;
+          estimated_margin: number;
+          source: string | null;
+          campaign: string | null;
+          referred_by: string | null;
+          competitor: string | null;
+          detected_need: string | null;
+          next_action: string | null;
+          next_action_at: string | null;
+          expected_close_date: string | null;
+          lost_reason: string | null;
+          won_at: string | null;
+          lost_at: string | null;
+          notes: string | null;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+          assigned_to?: string | null;
+          company_id: string;
+          contact_id?: string | null;
+          title: string;
+          description?: string | null;
+          status?: "abierta" | "ganada" | "perdida" | "pospuesta" | "no_encaja";
+          stage?:
+            | "detectada"
+            | "contactada"
+            | "reunion"
+            | "propuesta"
+            | "negociacion"
+            | "ganada"
+            | "perdida";
+          temperature?: "fria" | "templada" | "caliente";
+          probability?: number;
+          one_time_value?: number;
+          expected_mrr?: number;
+          estimated_cost?: number;
+          estimated_margin?: number;
+          source?: string | null;
+          campaign?: string | null;
+          referred_by?: string | null;
+          competitor?: string | null;
+          detected_need?: string | null;
+          next_action?: string | null;
+          next_action_at?: string | null;
+          expected_close_date?: string | null;
+          lost_reason?: string | null;
+          won_at?: string | null;
+          lost_at?: string | null;
+          notes?: string | null;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+          assigned_to?: string | null;
+          company_id?: string;
+          contact_id?: string | null;
+          title?: string;
+          description?: string | null;
+          status?: "abierta" | "ganada" | "perdida" | "pospuesta" | "no_encaja";
+          stage?:
+            | "detectada"
+            | "contactada"
+            | "reunion"
+            | "propuesta"
+            | "negociacion"
+            | "ganada"
+            | "perdida";
+          temperature?: "fria" | "templada" | "caliente";
+          probability?: number;
+          one_time_value?: number;
+          expected_mrr?: number;
+          estimated_cost?: number;
+          estimated_margin?: number;
+          source?: string | null;
+          campaign?: string | null;
+          referred_by?: string | null;
+          competitor?: string | null;
+          detected_need?: string | null;
+          next_action?: string | null;
+          next_action_at?: string | null;
+          expected_close_date?: string | null;
+          lost_reason?: string | null;
+          won_at?: string | null;
+          lost_at?: string | null;
+          notes?: string | null;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -303,6 +424,12 @@ export type Database = {
       soft_delete_contact: {
         Args: {
           contact_id: string;
+        };
+        Returns: void;
+      };
+      soft_delete_opportunity: {
+        Args: {
+          opportunity_id: string;
         };
         Returns: void;
       };

@@ -1,6 +1,5 @@
-import { OpportunitiesClientPage } from "@/features/opportunities/components/opportunities-client-page";
-import { mockOpportunities } from "@/features/opportunities/data/mock-opportunities";
+import { OpportunitiesRealtimePage } from "@/features/opportunities/components/opportunities-realtime-page";
 
 export default function OpportunitiesPage() {
-  return <OpportunitiesClientPage opportunities={mockOpportunities} />;
+  return <OpportunitiesRealtimePage />;
 }
