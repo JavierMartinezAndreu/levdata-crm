@@ -325,6 +325,7 @@ export type Database = {
           detected_need: string | null;
           next_action: string | null;
           next_action_at: string | null;
+          follow_up_activity_id: string | null;
           expected_close_date: string | null;
           lost_reason: string | null;
           won_at: string | null;
@@ -364,6 +365,7 @@ export type Database = {
           detected_need?: string | null;
           next_action?: string | null;
           next_action_at?: string | null;
+          follow_up_activity_id?: string | null;
           expected_close_date?: string | null;
           lost_reason?: string | null;
           won_at?: string | null;
@@ -403,6 +405,7 @@ export type Database = {
           detected_need?: string | null;
           next_action?: string | null;
           next_action_at?: string | null;
+          follow_up_activity_id?: string | null;
           expected_close_date?: string | null;
           lost_reason?: string | null;
           won_at?: string | null;

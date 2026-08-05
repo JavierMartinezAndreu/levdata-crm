@@ -14,6 +14,9 @@ type OpportunityInsert =
 type OpportunityUpdate =
   Database["public"]["Tables"]["opportunities"]["Update"];
 
+type ActivityInsert = Database["public"]["Tables"]["activities"]["Insert"];
+type ActivityUpdate = Database["public"]["Tables"]["activities"]["Update"];
+
 export async function listOpportunities() {
   const supabase = getSupabaseBrowserClient();
 
@@ -131,7 +134,21 @@ export async function createOpportunity(values: OpportunityFormValues) {
     throw new Error(error.message);
   }
 
-  return data as OpportunityDb;
+  const opportunity = data as OpportunityDb;
+
+  await syncFollowUpActivity(opportunity, values, user.id);
+
+  const { data: refreshedOpportunity, error: refreshError } = await supabase
+    .from("opportunities")
+    .select("*")
+    .eq("id", opportunity.id)
+    .single();
+
+  if (refreshError) {
+    throw new Error(refreshError.message);
+  }
+
+  return refreshedOpportunity as OpportunityDb;
 }
 
 export async function updateOpportunity(
@@ -139,6 +156,16 @@ export async function updateOpportunity(
   values: OpportunityFormValues,
 ) {
   const supabase = getSupabaseBrowserClient();
+
+  const { data: currentOpportunity, error: currentError } = await supabase
+    .from("opportunities")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (currentError) {
+    throw new Error(currentError.message);
+  }
 
   const payload: OpportunityUpdate = {
     company_id: values.company_id,
@@ -179,7 +206,29 @@ export async function updateOpportunity(
     throw new Error(error.message);
   }
 
-  return data as OpportunityDb;
+  const opportunity = {
+    ...(data as OpportunityDb),
+    follow_up_activity_id:
+      (currentOpportunity as OpportunityDb).follow_up_activity_id,
+  };
+
+  await syncFollowUpActivity(
+    opportunity,
+    values,
+    opportunity.assigned_to ?? opportunity.created_by,
+  );
+
+  const { data: refreshedOpportunity, error: refreshError } = await supabase
+    .from("opportunities")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (refreshError) {
+    throw new Error(refreshError.message);
+  }
+
+  return refreshedOpportunity as OpportunityDb;
 }
 
 export async function softDeleteOpportunity(id: string) {
@@ -191,6 +240,121 @@ export async function softDeleteOpportunity(id: string) {
 
   if (error) {
     throw new Error(error.message);
+  }
+}
+
+async function syncFollowUpActivity(
+  opportunity: OpportunityDb,
+  values: OpportunityFormValues,
+  fallbackUserId: string | null,
+) {
+  const supabase = getSupabaseBrowserClient();
+
+  const nextAction = toNullable(values.next_action);
+  const nextActionAt = toNullableDateTime(values.next_action_at);
+
+  const shouldHaveFollowUp =
+    values.status === "abierta" && nextAction && nextActionAt;
+
+  if (!shouldHaveFollowUp) {
+    if (opportunity.follow_up_activity_id) {
+      const activityPayload: ActivityUpdate = {
+        status: "cancelada",
+        notes: "Actividad cancelada automáticamente porque la oportunidad ya no tiene próxima acción abierta.",
+      };
+
+      const { error: cancelError } = await supabase
+        .from("activities")
+        .update(activityPayload)
+        .eq("id", opportunity.follow_up_activity_id);
+
+      if (cancelError) {
+        throw new Error(cancelError.message);
+      }
+
+      const { error: unlinkError } = await supabase
+        .from("opportunities")
+        .update({ follow_up_activity_id: null })
+        .eq("id", opportunity.id);
+
+      if (unlinkError) {
+        throw new Error(unlinkError.message);
+      }
+    }
+
+    return;
+  }
+
+  const cleanTitle = `Seguimiento: ${nextAction}`;
+
+  if (opportunity.follow_up_activity_id) {
+    const activityPayload: ActivityUpdate = {
+      company_id: opportunity.company_id,
+      contact_id: toNullable(values.contact_id),
+      opportunity_id: opportunity.id,
+      type: "seguimiento",
+      title: cleanTitle,
+      subject: cleanTitle,
+      description: values.detected_need
+        ? `Seguimiento de oportunidad: ${values.detected_need}`
+        : "Seguimiento generado automáticamente desde oportunidad.",
+      status: "pendiente",
+      scheduled_at: nextActionAt,
+      notes: values.notes
+        ? `Actividad sincronizada desde oportunidad. Notas: ${values.notes}`
+        : "Actividad sincronizada desde oportunidad.",
+    };
+
+    const { error } = await supabase
+      .from("activities")
+      .update(activityPayload)
+      .eq("id", opportunity.follow_up_activity_id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return;
+  }
+
+  const activityPayload: ActivityInsert = {
+    created_by: fallbackUserId,
+    assigned_to: fallbackUserId,
+    company_id: opportunity.company_id,
+    contact_id: toNullable(values.contact_id),
+    opportunity_id: opportunity.id,
+    type: "seguimiento",
+    title: cleanTitle,
+    subject: cleanTitle,
+    description: values.detected_need
+      ? `Seguimiento de oportunidad: ${values.detected_need}`
+      : "Seguimiento generado automáticamente desde oportunidad.",
+    status: "pendiente",
+    scheduled_at: nextActionAt,
+    notes: values.notes
+      ? `Actividad generada desde oportunidad. Notas: ${values.notes}`
+      : "Actividad generada desde oportunidad.",
+  };
+
+  const { data: createdActivity, error: activityError } = await supabase
+    .from("activities")
+    .insert(activityPayload)
+    .select("id")
+    .single();
+
+  if (activityError) {
+    throw new Error(activityError.message);
+  }
+
+  const { error: linkError } = await supabase
+    .from("opportunities")
+    .update({
+      follow_up_activity_id: createdActivity.id,
+    })
+    .eq("id", opportunity.id);
+
+  if (linkError) {
+    throw new Error(linkError.message);
   }
 }
 
