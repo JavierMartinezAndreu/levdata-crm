@@ -20,9 +20,15 @@ type ProjectCardProps = {
   project: Project;
   sprints: Sprint[];
   features: Feature[];
+  detailHref?: string;
 };
 
-export function ProjectCard({ project, sprints, features }: ProjectCardProps) {
+export function ProjectCard({
+  project,
+  sprints,
+  features,
+  detailHref,
+}: ProjectCardProps) {
   const projectSprints = getProjectSprints(project.id, sprints);
   const projectFeatures = getProjectFeatures(project.id, features);
   const technicalProgress = getTechnicalProgress(projectFeatures);
@@ -114,7 +120,7 @@ export function ProjectCard({ project, sprints, features }: ProjectCardProps) {
             variant="outline"
             className="rounded-2xl border-[#A1C7E0]/60 bg-white"
           >
-            <Link href={`/proyectos/${project.id}`}>
+            <Link href={detailHref ?? `/proyectos/${project.id}`}>
               Ver detalle
               <ArrowRight className="ml-2 size-4" />
             </Link>

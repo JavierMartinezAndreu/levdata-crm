@@ -700,6 +700,7 @@ export function ProjectsRealtimePage() {
                   project={adaptedProject}
                   sprints={adaptedSprints}
                   features={adaptedFeatures}
+                  detailHref={`/proyectos/detalle?id=${item.project.id}`}
                 />
 
                 <div className="flex flex-wrap justify-end gap-2">
