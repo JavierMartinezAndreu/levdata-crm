@@ -523,6 +523,257 @@ export type Database = {
         };
         Relationships: [];
       };
+      payments: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+          company_id: string | null;
+          opportunity_id: string | null;
+          project_id: string | null;
+          quote_id: string | null;
+          registered_by: string | null;
+          amount: number;
+          payment_date: string;
+          due_date: string | null;
+          method:
+            | "transferencia"
+            | "efectivo"
+            | "bizum"
+            | "stripe"
+            | "redsys"
+            | "otro";
+          status: "pendiente" | "cobrado" | "parcial" | "vencido" | "cancelado";
+          concept: string;
+          notes: string | null;
+          receipt_url: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          company_id?: string | null;
+          opportunity_id?: string | null;
+          project_id?: string | null;
+          quote_id?: string | null;
+          registered_by?: string | null;
+          amount?: number;
+          payment_date?: string;
+          due_date?: string | null;
+          method?:
+            | "transferencia"
+            | "efectivo"
+            | "bizum"
+            | "stripe"
+            | "redsys"
+            | "otro";
+          status?: "pendiente" | "cobrado" | "parcial" | "vencido" | "cancelado";
+          concept: string;
+          notes?: string | null;
+          receipt_url?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          company_id?: string | null;
+          opportunity_id?: string | null;
+          project_id?: string | null;
+          quote_id?: string | null;
+          registered_by?: string | null;
+          amount?: number;
+          payment_date?: string;
+          due_date?: string | null;
+          method?:
+            | "transferencia"
+            | "efectivo"
+            | "bizum"
+            | "stripe"
+            | "redsys"
+            | "otro";
+          status?: "pendiente" | "cobrado" | "parcial" | "vencido" | "cancelado";
+          concept?: string;
+          notes?: string | null;
+          receipt_url?: string | null;
+        };
+        Relationships: [];
+      };
+
+      expenses: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+          company_id: string | null;
+          opportunity_id: string | null;
+          project_id: string | null;
+          paid_by: string | null;
+          amount: number;
+          expense_date: string;
+          next_date: string | null;
+          type:
+            | "puntual"
+            | "recurrente"
+            | "internoLevData"
+            | "asociadoProyecto"
+            | "asociadoMantenimiento";
+          category:
+            | "dominio"
+            | "hosting"
+            | "microsoft365"
+            | "sim"
+            | "licencia"
+            | "plugin"
+            | "servidor"
+            | "diseno"
+            | "subcontratacion"
+            | "herramientaIA"
+            | "publicidad"
+            | "otro";
+          concept: string;
+          periodicity: string | null;
+          is_reimbursable: boolean;
+          notes: string | null;
+          receipt_url: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          company_id?: string | null;
+          opportunity_id?: string | null;
+          project_id?: string | null;
+          paid_by?: string | null;
+          amount?: number;
+          expense_date?: string;
+          next_date?: string | null;
+          type?:
+            | "puntual"
+            | "recurrente"
+            | "internoLevData"
+            | "asociadoProyecto"
+            | "asociadoMantenimiento";
+          category?:
+            | "dominio"
+            | "hosting"
+            | "microsoft365"
+            | "sim"
+            | "licencia"
+            | "plugin"
+            | "servidor"
+            | "diseno"
+            | "subcontratacion"
+            | "herramientaIA"
+            | "publicidad"
+            | "otro";
+          concept: string;
+          periodicity?: string | null;
+          is_reimbursable?: boolean;
+          notes?: string | null;
+          receipt_url?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          company_id?: string | null;
+          opportunity_id?: string | null;
+          project_id?: string | null;
+          paid_by?: string | null;
+          amount?: number;
+          expense_date?: string;
+          next_date?: string | null;
+          type?:
+            | "puntual"
+            | "recurrente"
+            | "internoLevData"
+            | "asociadoProyecto"
+            | "asociadoMantenimiento";
+          category?:
+            | "dominio"
+            | "hosting"
+            | "microsoft365"
+            | "sim"
+            | "licencia"
+            | "plugin"
+            | "servidor"
+            | "diseno"
+            | "subcontratacion"
+            | "herramientaIA"
+            | "publicidad"
+            | "otro";
+          concept?: string;
+          periodicity?: string | null;
+          is_reimbursable?: boolean;
+          notes?: string | null;
+          receipt_url?: string | null;
+        };
+        Relationships: [];
+      };
+
+      payouts: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+          user_id: string | null;
+          project_id: string | null;
+          amount: number;
+          payout_date: string;
+          concept: string;
+          type:
+            | "repartoBeneficio"
+            | "sueldo"
+            | "reembolso"
+            | "bonus"
+            | "adelanto";
+          notes: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          user_id?: string | null;
+          project_id?: string | null;
+          amount?: number;
+          payout_date?: string;
+          concept: string;
+          type?:
+            | "repartoBeneficio"
+            | "sueldo"
+            | "reembolso"
+            | "bonus"
+            | "adelanto";
+          notes?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          user_id?: string | null;
+          project_id?: string | null;
+          amount?: number;
+          payout_date?: string;
+          concept?: string;
+          type?:
+            | "repartoBeneficio"
+            | "sueldo"
+            | "reembolso"
+            | "bonus"
+            | "adelanto";
+          notes?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -566,6 +817,24 @@ export type Database = {
           p_outcome: string;
           p_next_action: string;
           p_next_action_at: string | null;
+        };
+        Returns: void;
+      };
+      soft_delete_payment: {
+        Args: {
+          payment_id: string;
+        };
+        Returns: void;
+      };
+      soft_delete_expense: {
+        Args: {
+          expense_id: string;
+        };
+        Returns: void;
+      };
+      soft_delete_payout: {
+        Args: {
+          payout_id: string;
         };
         Returns: void;
       };
