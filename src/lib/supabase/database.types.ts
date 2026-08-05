@@ -774,6 +774,244 @@ export type Database = {
         };
         Relationships: [];
       };
+            projects: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+          created_by: string | null;
+          assigned_to: string | null;
+          company_id: string;
+          contact_id: string | null;
+          opportunity_id: string | null;
+          name: string;
+          description: string | null;
+          status:
+            | "presupuestado"
+            | "aceptado"
+            | "enDesarrollo"
+            | "pausado"
+            | "entregado"
+            | "enMantenimiento"
+            | "cerrado"
+            | "cancelado";
+          health: string;
+          start_date: string | null;
+          target_date: string | null;
+          delivered_at: string | null;
+          budget_total: number;
+          manual_progress: number;
+          notes: string | null;
+          repository_url: string | null;
+          staging_url: string | null;
+          production_url: string | null;
+          private_notes: string | null;
+          collected_total: number;
+          expenses_total: number;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          created_by?: string | null;
+          assigned_to?: string | null;
+          company_id: string;
+          contact_id?: string | null;
+          opportunity_id?: string | null;
+          name: string;
+          description?: string | null;
+          status?:
+            | "presupuestado"
+            | "aceptado"
+            | "enDesarrollo"
+            | "pausado"
+            | "entregado"
+            | "enMantenimiento"
+            | "cerrado"
+            | "cancelado";
+          health?: string;
+          start_date?: string | null;
+          target_date?: string | null;
+          delivered_at?: string | null;
+          budget_total?: number;
+          manual_progress?: number;
+          notes?: string | null;
+          repository_url?: string | null;
+          staging_url?: string | null;
+          production_url?: string | null;
+          private_notes?: string | null;
+          collected_total?: number;
+          expenses_total?: number;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          created_by?: string | null;
+          assigned_to?: string | null;
+          company_id?: string;
+          contact_id?: string | null;
+          opportunity_id?: string | null;
+          name?: string;
+          description?: string | null;
+          status?:
+            | "presupuestado"
+            | "aceptado"
+            | "enDesarrollo"
+            | "pausado"
+            | "entregado"
+            | "enMantenimiento"
+            | "cerrado"
+            | "cancelado";
+          health?: string;
+          start_date?: string | null;
+          target_date?: string | null;
+          delivered_at?: string | null;
+          budget_total?: number;
+          manual_progress?: number;
+          notes?: string | null;
+          repository_url?: string | null;
+          staging_url?: string | null;
+          production_url?: string | null;
+          private_notes?: string | null;
+          collected_total?: number;
+          expenses_total?: number;
+        };
+        Relationships: [];
+      };
+      project_sprints: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+          project_id: string;
+          name: string;
+          description: string | null;
+          sort_order: number;
+          status: "planificado" | "enCurso" | "entregado" | "pausado" | "cancelado";
+          planned_start_date: string | null;
+          planned_delivery_date: string | null;
+          delivered_at: string | null;
+          budget_amount: number;
+          collected_amount: number;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          project_id: string;
+          name: string;
+          description?: string | null;
+          sort_order?: number;
+          status?: "planificado" | "enCurso" | "entregado" | "pausado" | "cancelado";
+          planned_start_date?: string | null;
+          planned_delivery_date?: string | null;
+          delivered_at?: string | null;
+          budget_amount?: number;
+          collected_amount?: number;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          project_id?: string;
+          name?: string;
+          description?: string | null;
+          sort_order?: number;
+          status?: "planificado" | "enCurso" | "entregado" | "pausado" | "cancelado";
+          planned_start_date?: string | null;
+          planned_delivery_date?: string | null;
+          delivered_at?: string | null;
+          budget_amount?: number;
+          collected_amount?: number;
+        };
+        Relationships: [];
+      };
+
+      project_features: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+          project_id: string;
+          sprint_id: string | null;
+          title: string;
+          description: string | null;
+          status:
+            | "planificada"
+            | "enDesarrollo"
+            | "desarrollada"
+            | "entregada"
+            | "cancelada";
+          priority: "baja" | "media" | "alta" | "critica";
+          assigned_to: string | null;
+          sort_order: number;
+          started_at: string | null;
+          developed_at: string | null;
+          delivered_at: string | null;
+          cancelled_at: string | null;
+          cancellation_reason: string | null;
+          technical_notes: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          project_id: string;
+          sprint_id?: string | null;
+          title: string;
+          description?: string | null;
+          status?:
+            | "planificada"
+            | "enDesarrollo"
+            | "desarrollada"
+            | "entregada"
+            | "cancelada";
+          priority?: "baja" | "media" | "alta" | "critica";
+          assigned_to?: string | null;
+          sort_order?: number;
+          started_at?: string | null;
+          developed_at?: string | null;
+          delivered_at?: string | null;
+          cancelled_at?: string | null;
+          cancellation_reason?: string | null;
+          technical_notes?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          project_id?: string;
+          sprint_id?: string | null;
+          title?: string;
+          description?: string | null;
+          status?:
+            | "planificada"
+            | "enDesarrollo"
+            | "desarrollada"
+            | "entregada"
+            | "cancelada";
+          priority?: "baja" | "media" | "alta" | "critica";
+          assigned_to?: string | null;
+          sort_order?: number;
+          started_at?: string | null;
+          developed_at?: string | null;
+          delivered_at?: string | null;
+          cancelled_at?: string | null;
+          cancellation_reason?: string | null;
+          technical_notes?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -835,6 +1073,24 @@ export type Database = {
       soft_delete_payout: {
         Args: {
           payout_id: string;
+        };
+        Returns: void;
+      };
+      soft_delete_project: {
+        Args: {
+          project_id: string;
+        };
+        Returns: void;
+      };
+      soft_delete_project_sprint: {
+        Args: {
+          sprint_id: string;
+        };
+        Returns: void;
+      };
+      soft_delete_project_feature: {
+        Args: {
+          feature_id: string;
         };
         Returns: void;
       };

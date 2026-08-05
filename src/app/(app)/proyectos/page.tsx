@@ -1,16 +1,5 @@
-import { ProjectsClientPage } from "@/features/projects/components/projects-client-page";
-import {
-  mockFeatures,
-  mockProjects,
-  mockSprints,
-} from "@/features/projects/data/mock-projects";
+import { ProjectsRealtimePage } from "@/features/projects/components/projects-realtime-page";
 
 export default function ProjectsPage() {
-  return (
-    <ProjectsClientPage
-      projects={mockProjects}
-      sprints={mockSprints}
-      features={mockFeatures}
-    />
-  );
+  return <ProjectsRealtimePage />;
 }
