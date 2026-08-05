@@ -412,6 +412,114 @@ export type Database = {
         };
         Relationships: [];
       };
+      activities: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          created_by: string | null;
+          assigned_to: string | null;
+          company_id: string | null;
+          contact_id: string | null;
+          opportunity_id: string | null;
+          project_id: string | null;
+          type:
+            | "llamada"
+            | "email"
+            | "whatsapp"
+            | "reunionFisica"
+            | "googleMeet"
+            | "notaInterna"
+            | "tarea"
+            | "seguimiento"
+            | "envioPropuesta"
+            | "revisionTecnica"
+            | "soporteMantenimiento";
+          title: string;
+          subject: string;
+          description: string | null;
+          status: "pendiente" | "realizada" | "cancelada" | "vencida";
+          scheduled_at: string | null;
+          finished_at: string | null;
+          completed_at: string | null;
+          outcome: string | null;
+          next_action: string | null;
+          next_action_at: string | null;
+          notes: string | null;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+          assigned_to?: string | null;
+          company_id?: string | null;
+          contact_id?: string | null;
+          opportunity_id?: string | null;
+          project_id?: string | null;
+          type?:
+            | "llamada"
+            | "email"
+            | "whatsapp"
+            | "reunionFisica"
+            | "googleMeet"
+            | "notaInterna"
+            | "tarea"
+            | "seguimiento"
+            | "envioPropuesta"
+            | "revisionTecnica"
+            | "soporteMantenimiento";
+          title: string;
+          subject: string;
+          description?: string | null;
+          status?: "pendiente" | "realizada" | "cancelada" | "vencida";
+          scheduled_at?: string | null;
+          finished_at?: string | null;
+          completed_at?: string | null;
+          outcome?: string | null;
+          next_action?: string | null;
+          next_action_at?: string | null;
+          notes?: string | null;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+          assigned_to?: string | null;
+          company_id?: string | null;
+          contact_id?: string | null;
+          opportunity_id?: string | null;
+          project_id?: string | null;
+          type?:
+            | "llamada"
+            | "email"
+            | "whatsapp"
+            | "reunionFisica"
+            | "googleMeet"
+            | "notaInterna"
+            | "tarea"
+            | "seguimiento"
+            | "envioPropuesta"
+            | "revisionTecnica"
+            | "soporteMantenimiento";
+          title?: string;
+          subject?: string;
+          description?: string | null;
+          status?: "pendiente" | "realizada" | "cancelada" | "vencida";
+          scheduled_at?: string | null;
+          finished_at?: string | null;
+          completed_at?: string | null;
+          outcome?: string | null;
+          next_action?: string | null;
+          next_action_at?: string | null;
+          notes?: string | null;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -440,6 +548,21 @@ export type Database = {
           p_role: string;
           p_job_title: string;
           p_is_primary: boolean;
+        };
+        Returns: void;
+      };
+      soft_delete_activity: {
+        Args: {
+          activity_id: string;
+        };
+        Returns: void;
+      };
+      complete_activity: {
+        Args: {
+          activity_id: string;
+          p_outcome: string;
+          p_next_action: string;
+          p_next_action_at: string | null;
         };
         Returns: void;
       };

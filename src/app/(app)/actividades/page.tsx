@@ -1,6 +1,5 @@
-import { ActivitiesClientPage } from "@/features/activities/components/activities-client-page";
-import { mockActivities } from "@/features/activities/data/mock-activities";
+import { ActivitiesRealtimePage } from "@/features/activities/components/activities-realtime-page";
 
 export default function ActivitiesPage() {
-  return <ActivitiesClientPage activities={mockActivities} />;
+  return <ActivitiesRealtimePage />;
 }
