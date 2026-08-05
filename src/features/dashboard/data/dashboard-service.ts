@@ -2,17 +2,22 @@ import { listActivities } from "@/features/activities/data/activities-service";
 import type { ActivityListItem } from "@/features/activities/types";
 import { listCompanies } from "@/features/companies/data/companies-service";
 import { listContacts } from "@/features/contacts/data/contacts-service";
+import {
+  getFinanceData,
+  getFinanceStats,
+} from "@/features/finance/data/finance-service";
 import { listOpportunities } from "@/features/opportunities/data/opportunities-service";
-import type { OpportunityListItem } from "@/features/opportunities/types";
 import type { DashboardData, DashboardHealth } from "@/features/dashboard/types";
 
 export async function getDashboardData(): Promise<DashboardData> {
-  const [companies, contacts, opportunities, activities] = await Promise.all([
-    listCompanies(),
-    listContacts(),
-    listOpportunities(),
-    listActivities(),
-  ]);
+  const [companies, contacts, opportunities, activities, financeData] =
+    await Promise.all([
+      listCompanies(),
+      listContacts(),
+      listOpportunities(),
+      listActivities(),
+      getFinanceData(),
+    ]);
 
   const todayKey = getDateKey(new Date());
   const now = Date.now();
@@ -66,10 +71,13 @@ export async function getDashboardData(): Promise<DashboardData> {
     0,
   );
 
+  const finance = getFinanceStats(financeData);
+
   const health = getDashboardHealth({
     overdueActivities: overdueActivities.length,
     opportunitiesWithoutNextAction: opportunitiesWithoutNextAction.length,
-    hotOpportunities: hotOpportunities.length,
+    overdueMoney: finance.overdue,
+    pendingMoney: finance.pending,
   });
 
   return {
@@ -86,6 +94,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       todayActivities: todayActivities.length,
       opportunitiesWithoutNextAction: opportunitiesWithoutNextAction.length,
     },
+    finance,
     todayActivities,
     overdueActivities,
     hotOpportunities,
@@ -110,17 +119,22 @@ function compareActivitiesByDate(a: ActivityListItem, b: ActivityListItem) {
 function getDashboardHealth(params: {
   overdueActivities: number;
   opportunitiesWithoutNextAction: number;
-  hotOpportunities: number;
+  overdueMoney: number;
+  pendingMoney: number;
 }): DashboardHealth {
-  if (params.overdueActivities >= 3 || params.opportunitiesWithoutNextAction >= 3) {
+  if (
+    params.overdueActivities >= 3 ||
+    params.opportunitiesWithoutNextAction >= 3 ||
+    params.overdueMoney > 0
+  ) {
     return "urgente";
   }
 
-  if (params.overdueActivities > 0 || params.opportunitiesWithoutNextAction > 0) {
-    return "atencion";
-  }
-
-  if (params.hotOpportunities > 0) {
+  if (
+    params.overdueActivities > 0 ||
+    params.opportunitiesWithoutNextAction > 0 ||
+    params.pendingMoney > 0
+  ) {
     return "atencion";
   }
 

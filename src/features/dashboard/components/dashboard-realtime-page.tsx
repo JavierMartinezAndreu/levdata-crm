@@ -56,20 +56,28 @@ export function DashboardRealtimePage() {
   const focusMessage = useMemo(() => {
     if (!data) return "Cargando estado real de LevData...";
 
+    if (data.finance.overdue > 0) {
+        return `Hay ${formatMoney(data.finance.overdue)} vencidos. Prioridad: recuperar caja.`;
+    }
+
     if (data.metrics.overdueActivities > 0) {
-      return `Hay ${data.metrics.overdueActivities} actividad(es) vencida(s). Empieza por recuperarlas.`;
+        return `Hay ${data.metrics.overdueActivities} actividad(es) vencida(s). Empieza por recuperarlas.`;
     }
 
     if (data.metrics.opportunitiesWithoutNextAction > 0) {
-      return `Hay ${data.metrics.opportunitiesWithoutNextAction} oportunidad(es) abiertas sin próxima acción.`;
+        return `Hay ${data.metrics.opportunitiesWithoutNextAction} oportunidad(es) abiertas sin próxima acción.`;
+    }
+
+    if (data.finance.pending > 0) {
+        return `Hay ${formatMoney(data.finance.pending)} pendiente(s) de cobro. Conviene hacer seguimiento.`;
     }
 
     if (data.metrics.hotOpportunities > 0) {
-      return `Hay ${data.metrics.hotOpportunities} oportunidad(es) calientes. Prioriza seguimiento comercial.`;
+        return `Hay ${data.metrics.hotOpportunities} oportunidad(es) calientes. Prioriza seguimiento comercial.`;
     }
 
     return "No hay bloqueos urgentes. Buen momento para prospectar o avanzar entregas.";
-  }, [data]);
+    }, [data]);
 
   if (loading && !data) {
     return (
@@ -219,29 +227,58 @@ export function DashboardRealtimePage() {
 
           <div className="grid gap-3 rounded-[1.5rem] bg-white/8 p-4 ring-1 ring-white/10 sm:grid-cols-2">
             <HeroStat
-              label="Pipeline abierto"
-              value={<MoneyValue value={data.metrics.openPipelineValue} size="lg" className="text-white" />}
-              detail="Valor único potencial"
-            />
+                label="Caja estimada"
+                value={
+                    <MoneyValue
+                    value={data.finance.estimatedCash}
+                    size="lg"
+                    className="text-white"
+                    />
+                }
+                detail="Cobrado - gastos - repartos"
+                />
 
-            <HeroStat
-              label="MRR previsto"
-              value={<MoneyValue value={data.metrics.expectedMrr} size="lg" className="text-white" />}
-              detail="Recurrente potencial"
-            />
+                <HeroStat
+                label="Pendiente"
+                value={
+                    <MoneyValue
+                    value={data.finance.pending}
+                    size="lg"
+                    className={
+                        data.finance.pending > 0 ? "text-[#FF9933]" : "text-white"
+                    }
+                    />
+                }
+                detail="Cobros no cerrados"
+                warning={data.finance.pending > 0}
+                />
 
-            <HeroStat
-              label="Hoy"
-              value={data.metrics.todayActivities}
-              detail="Actividades programadas"
-            />
+                <HeroStat
+                label="Pipeline abierto"
+                value={
+                    <MoneyValue
+                    value={data.metrics.openPipelineValue}
+                    size="lg"
+                    className="text-white"
+                    />
+                }
+                detail="Valor único potencial"
+                />
 
-            <HeroStat
-              label="Vencidas"
-              value={data.metrics.overdueActivities}
-              detail="Requieren atención"
-              warning={data.metrics.overdueActivities > 0}
-            />
+                <HeroStat
+                label="Vencido"
+                value={
+                    <MoneyValue
+                    value={data.finance.overdue}
+                    size="lg"
+                    className={
+                        data.finance.overdue > 0 ? "text-[#FF9933]" : "text-white"
+                    }
+                    />
+                }
+                detail="Requiere seguimiento"
+                warning={data.finance.overdue > 0}
+                />
           </div>
         </div>
       </section>
@@ -292,7 +329,138 @@ export function DashboardRealtimePage() {
           }
           variationDirection="flat"
         />
+
+        <MetricCard
+            title="Cobrado"
+            value={
+                <MoneyValue value={data.finance.collected} size="lg" tone="positive" />
+            }
+            description="Ingresos confirmados"
+            icon={CheckCircle2}
+            tone="success"
+            variation="caja"
+            variationDirection="up"
+            />
+
+            <MetricCard
+            title="Gastos"
+            value={
+                <MoneyValue value={data.finance.expenses} size="lg" tone="danger" />
+            }
+            description="Salidas registradas"
+            icon={AlertTriangle}
+            tone="danger"
+            variation="control"
+            variationDirection="flat"
+            />
+
+            <MetricCard
+            title="Beneficio neto"
+            value={<MoneyValue value={data.finance.netProfit} size="lg" />}
+            description="Cobrado menos gastos"
+            icon={Flame}
+            tone="primary"
+            variation="real"
+            variationDirection="flat"
+            />
+
+            <MetricCard
+            title="Caja estimada"
+            value={<MoneyValue value={data.finance.estimatedCash} size="lg" />}
+            description="Tras gastos y repartos"
+            icon={CalendarClock}
+            tone="dark"
+            variation="tesorería"
+            variationDirection="flat"
+            />
       </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
+        <SectionCard
+            title="Tesorería"
+            description="Resumen financiero real conectado a cobros, gastos y repartos."
+            action={
+            <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="rounded-xl border-[#A1C7E0]/60 bg-white"
+            >
+                <Link href="/finanzas">Ver finanzas</Link>
+            </Button>
+            }
+        >
+            <div className="grid gap-3 sm:grid-cols-2">
+            <FinanceBox
+                title="Cobrado"
+                value={data.finance.collected}
+                detail="Ingresos confirmados"
+                tone="success"
+            />
+
+            <FinanceBox
+                title="Pendiente"
+                value={data.finance.pending}
+                detail="Cobros pendientes/parciales"
+                tone={data.finance.pending > 0 ? "warning" : "success"}
+            />
+
+            <FinanceBox
+                title="Vencido"
+                value={data.finance.overdue}
+                detail="Fuera de fecha"
+                tone={data.finance.overdue > 0 ? "danger" : "success"}
+            />
+
+            <FinanceBox
+                title="Reembolsable"
+                value={data.finance.reimbursableExpenses}
+                detail="Gastos a recuperar"
+                tone={data.finance.reimbursableExpenses > 0 ? "warning" : "success"}
+            />
+            </div>
+        </SectionCard>
+
+        <SectionCard
+            title="Resultado interno"
+            description="No es contabilidad legal: es control operativo de caja."
+        >
+            <div className="space-y-3">
+            <FinanceRow
+                label="Cobrado"
+                value={data.finance.collected}
+                positive
+            />
+
+            <FinanceRow
+                label="Gastos"
+                value={data.finance.expenses}
+                negative
+            />
+
+            <FinanceRow
+                label="Repartos internos"
+                value={data.finance.payouts}
+                negative
+            />
+
+            <div className="border-t border-[#DCEAF1] pt-3">
+                <FinanceRow
+                label="Caja estimada"
+                value={data.finance.estimatedCash}
+                strong
+                positive={data.finance.estimatedCash >= 0}
+                negative={data.finance.estimatedCash < 0}
+                />
+            </div>
+
+            <div className="rounded-2xl bg-[#F6FAFC] p-4 text-sm leading-6 text-slate-500">
+                La caja estimada se calcula con cobros confirmados menos gastos y
+                repartos. El pendiente de cobro no se suma hasta marcarse como cobrado.
+            </div>
+            </div>
+        </SectionCard>
+        </section>
 
       <section className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
         <SectionCard
@@ -733,4 +901,80 @@ function formatTime(value: string) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
+}
+
+function FinanceBox({
+  title,
+  value,
+  detail,
+  tone,
+}: {
+  title: string;
+  value: number;
+  detail: string;
+  tone: "success" | "warning" | "danger";
+}) {
+  const toneClass = {
+    success: "bg-emerald-50 text-emerald-700",
+    warning: "bg-orange-50 text-orange-700",
+    danger: "bg-red-50 text-red-700",
+  }[tone];
+
+  return (
+    <div className="rounded-3xl border border-[#DCEAF1]/70 bg-white p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
+            {title}
+          </p>
+
+          <MoneyValue value={value} size="lg" className="mt-2 block" />
+
+          <p className="mt-1 text-sm text-slate-500">{detail}</p>
+        </div>
+
+        <span className={`rounded-full px-3 py-1 text-xs font-black ${toneClass}`}>
+          {tone === "success" ? "OK" : tone === "warning" ? "Vigilar" : "Urgente"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function FinanceRow({
+  label,
+  value,
+  positive = false,
+  negative = false,
+  strong = false,
+}: {
+  label: string;
+  value: number;
+  positive?: boolean;
+  negative?: boolean;
+  strong?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-between gap-4 rounded-2xl px-4 py-3 ${
+        strong ? "bg-[#071B3A] text-white" : "bg-[#F6FAFC] text-[#071B3A]"
+      }`}
+    >
+      <span className={strong ? "font-black" : "font-bold"}>{label}</span>
+
+      <MoneyValue
+        value={value}
+        tone={positive ? "positive" : negative ? "danger" : "default"}
+        className={strong ? "text-white" : undefined}
+      />
+    </div>
+  );
+}
+
+function formatMoney(value: number) {
+  return new Intl.NumberFormat("es-ES", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(value);
 }
